@@ -1,6 +1,6 @@
 import path from "path";
+import { bold } from "kleur";
 import inquirer from "inquirer";
-import Listr from "listr";
 import { constants } from "fs";
 import { paramCase, pascalCase } from "change-case";
 import { writeFile, readFile, access } from "fs/promises";
@@ -60,43 +60,40 @@ async function saveFilesToDisk(files, distPath, name, extentios) {
     return { filename, data: file };
   });
 
-  try {
-    const needOverwrite = await overwriteFiles(files);
+  const needOverwrite = await overwriteFiles(files);
 
-    if (needOverwrite) {
-      await Promise.all(
-        files.map(async ({ filename, data }) => {
-          return writeFile(filename, data);
-        })
-      );
-      console.log("complete");
-    } else {
-      console.log("canceled");
-    }
-  } catch (error) {
-    process.exit();
+  if (needOverwrite) {
+    await Promise.all(
+      files.map(async ({ filename, data }) => {
+        return writeFile(filename, data);
+      })
+    );
   }
 }
 
 async function overwriteFiles(files) {
-  const existingFiles = await Promise.all(
-    files.map(({ filename }) => access(filename, constants.F_OK))
-  );
+  try {
+    const existingFiles = await Promise.all(
+      files.map(({ filename }) => access(filename, constants.F_OK))
+    );
 
-  if (existingFiles.length) {
-    const { overwrite } = await inquirer.prompt([
-      {
-        type: "confirm",
-        name: "overwrite",
-        message: "Files exist, would you like to overwrite them?",
-        default: false,
-      },
-    ]);
+    if (existingFiles.length) {
+      const { overwrite } = await inquirer.prompt([
+        {
+          type: "confirm",
+          name: "overwrite",
+          message: "Files exist, would you like to overwrite them?",
+          default: false,
+        },
+      ]);
 
-    return overwrite;
+      return overwrite;
+    }
+
+    return true;
+  } catch (error) {
+    return true;
   }
-
-  return true;
 }
 
 async function createFiles(options) {
@@ -114,7 +111,7 @@ async function createFiles(options) {
     })
   );
 
-  saveFilesToDisk(files, options.targetDir, options.name, options.files);
+  await saveFilesToDisk(files, options.targetDir, options.name, options.files);
 }
 
 async function createFile(name, title, ext) {
@@ -138,12 +135,7 @@ export async function cli() {
   let options = await promptAnswersToOptions();
   options = populateOptions(options);
 
-  const tasks = new Listr([
-    {
-      title: "Create files",
-      task: () => createFiles(options),
-    },
-  ]);
+  await createFiles(options);
 
-  await tasks.run();
+  console.log(bold().green("Done!"));
 }
