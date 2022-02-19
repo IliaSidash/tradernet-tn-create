@@ -7,8 +7,21 @@ import { writeFile, readFile, access } from "fs/promises";
 
 import { getStoriesTitle, getTargetDir, createDir } from "./utils";
 
+const ENTITY_PAGE = "page";
+const ENTITY_WIDGET = "widget";
+const ENTITY_UI = "ui-component";
+const ENTITY_COMPONENT = "component";
+
+const EXT_VUE = ".vue";
+const EXT_JS = ".js";
+const EXT_STORIES = ".stories.js";
+
+function isEntryPoint(entity) {
+  return [ENTITY_PAGE, ENTITY_WIDGET].includes(entity);
+}
+
 function populateOptions(options) {
-  const { entity, name } = options;
+  const { entity, name, extensions } = options;
   const pascalCaseName = pascalCase(name);
 
   options = {
@@ -16,7 +29,13 @@ function populateOptions(options) {
     name: pascalCaseName,
     targetDir: getTargetDir(entity, paramCase(name)),
     storiesTitle: getStoriesTitle(entity, pascalCaseName),
+    files: extensions.map((ext) => pascalCaseName + ext),
   };
+
+  if (isEntryPoint(entity) && extensions.includes(EXT_VUE)) {
+    options.extensions.push(EXT_JS);
+    options.files.push("index" + EXT_JS);
+  }
 
   return options;
 }
@@ -30,7 +49,7 @@ async function promptAnswersToOptions() {
     type: "list",
     name: "entity",
     message: "Choose what entity want to create?",
-    choices: ["component", "ui-component", "page", "widget"],
+    choices: [ENTITY_COMPONENT, ENTITY_UI, ENTITY_PAGE, ENTITY_WIDGET],
   });
 
   questions.push({
@@ -42,10 +61,10 @@ async function promptAnswersToOptions() {
 
   questions.push({
     type: "checkbox",
-    name: "files",
+    name: "extensions",
     message: "Choose which files should be created?",
-    choices: [".vue", ".stories.js"],
-    default: [".vue", ".stories.js"],
+    choices: [EXT_VUE, EXT_STORIES],
+    default: [EXT_VUE, EXT_STORIES],
   });
 
   const answers = await inquirer.prompt(questions);
@@ -53,10 +72,10 @@ async function promptAnswersToOptions() {
   return answers;
 }
 
-async function saveFilesToDisk(files, distPath, name, extentios) {
+async function saveFilesToDisk(files, distPath, fileNames) {
   files = files.map((file, index) => {
-    const filename = path.resolve(distPath, name + extentios[index]);
-
+    const filename = path.resolve(distPath, fileNames[index]);
+    console.log(filename);
     return { filename, data: file };
   });
 
@@ -106,12 +125,12 @@ async function createFiles(options) {
   }
 
   const files = await Promise.all(
-    options.files.map((ext) => {
+    options.extensions.map((ext) => {
       return createFile(options.name, options.storiesTitle, ext);
     })
   );
 
-  await saveFilesToDisk(files, options.targetDir, options.name, options.files);
+  await saveFilesToDisk(files, options.targetDir, options.files);
 }
 
 async function createFile(name, title, ext) {
