@@ -1,6 +1,6 @@
 {
   "name": "tradernet-tn-create",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "CLI for creating templates",
   "main": "src/index.js",
   "bin": {
@@ -33,9 +33,10 @@
     "prettier": "^2.5.1"
   },
   "dependencies": {
+    "chalk": "^5.0.0",
     "change-case": "^4.1.2",
     "esm": "^3.2.25",
     "inquirer": "^8.2.0",
-    "listr": "^0.14.3"
+    "kleur": "^4.1.4"
   }
 }

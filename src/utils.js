@@ -27,7 +27,7 @@ export function getTargetDir(entity, name) {
   const paths = {
     component: "src/components/",
     "ui-component": "src/ui/",
-    pages: "src/pages/",
+    page: "src/pages/",
     widget: "src/widgets/",
   };
 
