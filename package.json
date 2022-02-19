@@ -1,19 +1,24 @@
 {
-  "name": "@tradernet/tn-create",
+  "name": "tradernet-tn-create",
   "version": "1.0.0",
   "description": "CLI for creating templates",
   "main": "src/index.js",
   "bin": {
-    "@tradernet/tn-create": "bin/tn-cli",
     "tn-create": "bin/tn-cli"
   },
   "scripts": {
     "lint": "npx eslint --fix .",
-    "pretty": "npx prettier --write ./src"
+    "pretty": "npx prettier --write ./src",
+    "patch-version": "npm version patch",
+    "prepublish": "npm run pretty && npm run lint",
+    "public:publish": "npm publish --access=public"
   },
   "keywords": [
     "cli",
     "tradernet"
+  ],
+  "files": [
+    "src/templates/"
   ],
   "author": "iliasidash",
   "license": "ISC",
