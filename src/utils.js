@@ -14,10 +14,10 @@ export async function createDir(options) {
 
 export function getStoriesTitle(entity, name) {
   const titles = {
-    component: `Comopnents/${name}`,
+    component: `Components/${name}`,
     "ui-component": `UIComponents/${name}`,
     widget: `Widgets/${name}`,
-    pages: `Pages/${name}`,
+    page: `Pages/${name}`,
   };
 
   return titles[entity];
