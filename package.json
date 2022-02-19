@@ -1,6 +1,6 @@
 {
   "name": "tradernet-tn-create",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CLI for creating templates",
   "main": "src/index.js",
   "bin": {
