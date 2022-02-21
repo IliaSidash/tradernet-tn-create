@@ -18,7 +18,7 @@
     "tradernet"
   ],
   "files": [
-    "src/templates/"
+    "src/"
   ],
   "author": "iliasidash",
   "license": "ISC",
