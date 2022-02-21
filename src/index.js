@@ -1,6 +1,7 @@
 import path from "path";
 import { bold } from "kleur";
 import inquirer from "inquirer";
+import { fileURLToPath } from "url";
 import { constants } from "fs";
 import { paramCase, pascalCase } from "change-case";
 import { writeFile, readFile, access } from "fs/promises";
@@ -134,12 +135,10 @@ async function createFiles(options) {
 }
 
 async function createFile(name, title, ext) {
-  const currentFileUrl = import.meta.url;
-  const tempaltePath = path.resolve(
-    new URL(currentFileUrl).pathname,
-    "../templates",
-    ext
-  );
+  const filename = fileURLToPath(import.meta.url);
+  const dirname = path.dirname(filename);
+
+  const tempaltePath = path.resolve(dirname, "templates", ext);
 
   let file = await readFile(tempaltePath, { encoding: "utf-8" });
 
