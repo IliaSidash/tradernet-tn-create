@@ -1,5 +1,4 @@
-import { withCreateApp } from "../../utils";
-import "../../styles/tailwind.css";
+import { withCreateApp } from "@/utils";
 
 import ENTITY_NAME from "./ENTITY_NAME";
 
